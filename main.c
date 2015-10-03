@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "Connection.h"
+#include "Connection/TCPConnection.h"
 
 int main(int argc, char * argv[])
 {
@@ -10,26 +10,39 @@ int main(int argc, char * argv[])
 
 	int test_domain = AF_INET;
 	int test_type = SOCK_STREAM;
-	int	test_protocol = 0;
-	short test_port = 8476;
+
+	char buf[1024];
 
 	// Connection one
 	Connection * one;
 	one = Connection_Allocate();
-	Connection_InitializeFromIP(one, test_domain, test_type, test_protocol, "127.0.0.1", test_port);
+	printf("Allocated\n");
+	TCPConnection_InitializeFromIP(one, "24.56.178.140", 13);
+	printf("Initialized\n");
 	Connection_Open(one);
+	printf("Opened\n");
+
+	int charsRead = TCPConnection_Read(one, buf, 1024);
+	buf[charsRead] = '\0';
+	printf("Read:\n%s\n", buf);
+
 	Connection_Close(one);
+	printf("Closed\n");
 	Connection_Free(one);
+	printf("Freed\n");
 	
 	// Connection two
+	/*
 	Connection * two;
 	two = Connection_Allocate();
 	Connection_InitializeFromHost(two, test_domain, test_type, test_protocol, "localhost", test_port);
 	Connection_Open(two);
 	Connection_Close(two);
 	Connection_Free(two);
+	*/
 
 	// Connection three
+	/*
 	Connection * three;
 	three = Connection_Allocate();
 	int host_int = inet_pton("127.0.0.1");
@@ -37,7 +50,7 @@ int main(int argc, char * argv[])
 	Connection_Open(three);
 	Connection_Close(three);
 	Connection_Free(three);
-
+	*/
 
 
 	return(EXIT_SUCCESS);

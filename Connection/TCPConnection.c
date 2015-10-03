@@ -10,7 +10,7 @@
 //	conn: A pointer to the connection to initialize
 //	host: The host to connect to in IP form (null terminated)
 //	port: The port to connect to
-void TCPConnection_InitializeFromIP(Conection* conn, char* host, short port)
+void TCPConnection_InitializeFromIP(Connection* conn, char* host, short port)
 {
 	Connection_InitializeFromIP(conn, AF_INET, SOCK_STREAM, 0, host, port);
 }
@@ -38,7 +38,7 @@ void TCPConnection_InitializeFromHost(Connection* conn, char* host, short port)
 //	port: The port to connect to
 void TCPConnection_InitializeFromInt(Connection* conn, int host, short port)
 {
-	Connection_InitializeFromInt(Connection* conn, AF_INET, SOCK_STREAM, 0, host, port);
+	Connection_InitializeFromInt(conn, AF_INET, SOCK_STREAM, 0, host, port);
 }
 
 
@@ -51,7 +51,7 @@ void TCPConnection_InitializeFromInt(Connection* conn, int host, short port)
 //	length:	The number of bytes to send
 int TCPConnection_Write(Connection* conn, char* buffer, int length)
 {
-	return send(conn->socketFD, buffer, length, NULL);
+	return send(conn->socketFD, buffer, length, 0);
 }
 
 ///
@@ -66,5 +66,5 @@ int TCPConnection_Write(Connection* conn, char* buffer, int length)
 //	The amount of characters read
 int TCPConnection_Read(Connection* conn, char* buffer, int length)
 {
-	return recv(conn->socketFD, buffer, length, NULL);
+	return recv(conn->socketFD, buffer, length, 0);
 }

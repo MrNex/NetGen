@@ -11,7 +11,7 @@
 //	conn: A pointer to the connection to initialize
 //	host: The host to connect to in IP form (null terminated)
 //	port: The port to connect to
-void TCPConnection_InitializeFromIP(Conection* conn, char* host, short port);
+void TCPConnection_InitializeFromIP(Connection* conn, char* host, short port);
 
 ///
 //Initializes a TCP Connection which has a domain of AF_INET and a type of SOCK_STREAM
@@ -41,7 +41,7 @@ void TCPConnection_InitializeFromInt(Connection* conn, int host, short port);
 //	conn: A pointer to the connection to transmit data through
 //	buffer: The character array of data to send
 //	length:	The number of bytes to send
-void TCPConnection_Write(Connection* conn, char* buffer, int length);
+int TCPConnection_Write(Connection* conn, char* buffer, int length);
 
 ///
 //Recieves information from a TCP Connection and places it in a buffer
