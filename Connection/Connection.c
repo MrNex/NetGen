@@ -1,8 +1,11 @@
-
-
-#include <netdb.h>
 #include "Connection.h"
 
+#include <stdlib.h>
+#include <stdio.h>
+
+#include <netdb.h>
+#include <arpa/inet.h>
+#include <unistd.h>
 
 ///
 //Allocates memory needed for a Connection
@@ -31,11 +34,11 @@ Connection* Connection_Allocate()
 //	protocol: Specifies a protocol defined by the domain (0 specifies the default)
 //	host: The host name in IP form to connect to (Null Terminated)
 //	port: The port to connect to
-void Connection_InitializeFromIP(Connection* conn, int domain, int type, int protocol, char* host, short port);
+void Connection_InitializeFromIP(Connection* conn, int domain, int type, int protocol, char* host, short port)
 {
 	conn->socketFD = socket(domain, type, protocol);
 	conn->connAddr.sin_family = domain;
-	conn->connAddr.sin_addr.s_addr = inet_pton(host);
+	int successful = inet_pton(domain, host, &conn->connAddr.sin_addr.s_addr);
 	conn->connAddr.sin_port = htons(port);
 }
 
@@ -52,7 +55,7 @@ void Connection_InitializeFromIP(Connection* conn, int domain, int type, int pro
 //	protocol: Specifies a protocol defined by the domain (0 specifies the default)
 //	host: The host name in domain name form to connect to (Null Terminated)
 //	port: The port to connect to
-void Connection_InitializeFromHost(Connection* conn, int domain, int type, int protocol, char* host, short port);
+void Connection_InitializeFromHost(Connection* conn, int domain, int type, int protocol, char* host, short port)
 {
 	conn->socketFD = socket(domain, type, protocol);
 	
@@ -61,28 +64,29 @@ void Connection_InitializeFromHost(Connection* conn, int domain, int type, int p
 	
 	// initialize struct parameters of getaddrinfo()
 	struct addrinfo * addr_info = NULL;
-	struct addrinfo hints = NULL;
-	int eai_errno;
+	//struct addrinfo hints;
+	int error;
     
 	// initialize 'hints'
-	memset(&hints, 0, sizeof(struct addrinfo));
-    hints.ai_family = AF_UNSPEC;    /* Allow IPv4 or IPv6 */
-	hints.ai_socktype = SOCK_DGRAM; /* Datagram socket */
-	hints.ai_flags = AI_PASSIVE;    /* For wildcard IP address */
-	hints.ai_protocol = 0;          /* Any protocol */
-	hints.ai_canonname = NULL;
-	hints.ai_addr = NULL;
-	hints.ai_next = NULL;
+	
+	//memset(&hints, 0, sizeof(struct addrinfo));
+	//hints.ai_family = AF_UNSPEC;    /* Allow IPv4 or IPv6 */
+	//hints.ai_socktype = SOCK_DGRAM; /* Datagram socket */
+	//hints.ai_flags = AI_PASSIVE;    /* For wildcard IP address */
+	//hints.ai_protocol = 0;          /* Any protocol */
+	//hints.ai_canonname = NULL;
+	//hints.ai_addr = NULL;
+	//hints.ai_next = NULL;
 														   
-	eai_errno = getaddrinfo(host, port, &hints, &addr_info);
-	if (eai_errno != 0) 
+	error = getaddrinfo(host, NULL, NULL, &addr_info);
+	if (error != 0) 
 	{    
-		fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(s));
+		printf("Error getting address info: %d\n", error);
 		return;
 	}
 
 	// pull struct sockAddr data pointer from 'addr_info'	
-	conn->connAddr = addr_info->ai_addr;
+	conn->connAddr = *(struct sockaddr_in*)addr_info->ai_addr;
 
 	
 	freeaddrinfo(addr_info);
@@ -106,7 +110,7 @@ void Connection_InitializeFromHost(Connection* conn, int domain, int type, int p
 //	protocol: Specifies a protocol defined by the domain (0 specifies the default)
 //	host: The host name as an integer to connect to
 //	port: The port to connect to
-void Connection_InitializeFromInt(Connection* conn, int domain, int type, int protocol, int host, short port);
+void Connection_InitializeFromInt(Connection* conn, int domain, int type, int protocol, int host, short port)
 {
 	conn->socketFD = socket(domain, type, protocol);
 	conn->connAddr.sin_family = domain;
@@ -122,7 +126,7 @@ void Connection_InitializeFromInt(Connection* conn, int domain, int type, int pr
 //	conn: Pointer to the connection to free
 void Connection_Free(Connection* conn)
 {
-	free(*conn);
+	free(conn);
 }
 
 
@@ -133,7 +137,7 @@ void Connection_Free(Connection* conn)
 //	conn: Pointer to The connection to open
 void Connection_Open(Connection* conn)
 {
-	connect(conn->socketFD, (struct sockaddr *)&(conn->servAddress), sizeof(conn->servAddress));
+	connect(conn->socketFD, (struct sockaddr *)&(conn->connAddr), sizeof(conn->connAddr));
 }
 
 ///
