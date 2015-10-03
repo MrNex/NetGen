@@ -9,7 +9,7 @@
 typedef struct Connection
 {
 	int socketFD;			// File descriptor that represents this connection stream
-	struct sockaddr_in clientAddr;	// the connection holder specifics
+	struct sockaddr_in connAddr;	// the connection holder specifics
 } Connection;
 
 
