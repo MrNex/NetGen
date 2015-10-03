@@ -110,7 +110,7 @@ void Connection_InitializeFromInt(Connection* conn, int domain, int type, int pr
 {
 	conn->socketFD = socket(domain, type, protocol);
 	conn->connAddr.sin_family = domain;
-	conn->connAddr.sin_addr.s_addr = host;
+	conn->connAddr.sin_addr.s_addr = htonl(host);
 	conn->connAddr.sin_port = htons(port);
 }
 

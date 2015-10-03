@@ -3,7 +3,7 @@
 
 #include <sys/socket.h>
 #include <sys/types.h>
-
+#include <netinet/in.h>
 ///
 //Defines a basic network connection
 typedef struct Connection
@@ -86,3 +86,5 @@ void Connection_Open(Connection* conn);
 //	conn: Pointer to The connection to terminate
 void Connection_Close(Connection* conn);
 
+
+#endif
